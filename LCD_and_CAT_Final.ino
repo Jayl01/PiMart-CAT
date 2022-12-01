@@ -35,6 +35,7 @@ String group = "PiMart C.A.T. ";
 String c = "                  ";
 String names = "Adam,Alyna,Jayson,Jessie,and,Caden";
 
+//The following byte arrays are character definitions for the LCD.
 byte Heart[8] =
 {
 0b00000,
@@ -147,8 +148,7 @@ byte PlaceHolder[8] =
 0b00000
 };
 
-
-void ForwardFace(){
+void ForwardFace(){   //A method printing to the LCD the array assortment of characters to make the "forward" face.
   lcd.clear();
   lcd.setCursor(4,0);
   lcd.write(4);
@@ -163,7 +163,7 @@ void ForwardFace(){
   lcd.write(0);
 }
 
-void ReverseFace(){
+void ReverseFace(){   //A method printing to the LCD the array assortment of characters to make the "reverse" face.
   lcd.clear();
   lcd.setCursor(4,0);
   lcd.write(1);
@@ -177,7 +177,7 @@ void ReverseFace(){
   lcd.setCursor(12,1);
   lcd.write(3);
 }
-void LeftFace(){
+void LeftFace(){   //A method printing to the LCD the array assortment of characters to make the "left" face.
   lcd.clear();
   lcd.setCursor(4,0);
   lcd.write(1);
@@ -191,7 +191,7 @@ void LeftFace(){
   lcd.setCursor(12,1);
   lcd.write(0);
 }
-void RightFace(){
+void RightFace(){   //A method printing to the LCD the array assortment of characters to make the "right" face.
   lcd.clear();
   lcd.setCursor(4,0);
   lcd.write(2);
@@ -205,7 +205,7 @@ void RightFace(){
   lcd.setCursor(12,1);
   lcd.write(0);
 }
-void StopFace(){
+void StopFace(){   //A method printing to the LCD the array assortment of characters to make the "stop" face.
   lcd.clear();
   lcd.setCursor(4,0);
   lcd.print("v");
@@ -234,39 +234,38 @@ class Wheel
     int reversePinNumber;
     int enginePinNumber;
     
-    Wheel(int enginePin, int forwardPin, int reversePin)
+    Wheel(int enginePin, int forwardPin, int reversePin)    //The initializer method for a singular wheel. This method sets all the pin numbers and modes for each pin.
     {
-      forwardPinNumber = forwardPin;
+      forwardPinNumber = forwardPin;    //Stores all the pins as fields to access.
       reversePinNumber = reversePin;
       enginePinNumber = enginePin;
-      pinMode(enginePinNumber, OUTPUT);
+      pinMode(enginePinNumber, OUTPUT);   //Sets all of these wheel pins as output pins for the Arduino.
       pinMode(forwardPinNumber, OUTPUT);
       pinMode(reversePinNumber, OUTPUT);
     }
   
-    
-    void GoForward(int TravelSpeed)
+    void GoForward(int TravelSpeed)   //A method that moves this wheel forward.
     {
-      analogWrite(enginePinNumber, TravelSpeed);
+      analogWrite(enginePinNumber, TravelSpeed);    //Changes the pin speed
       analogWrite(forwardPinNumber, TravelSpeed);
-      digitalWrite(forwardPinNumber, HIGH);
+      digitalWrite(forwardPinNumber, HIGH);   //Has the wheel move forward by applying voltage to the forward pin.
       digitalWrite(reversePinNumber, LOW);
     }
     
     void Reverse(int TravelSpeed)
     {
-      analogWrite(enginePinNumber, TravelSpeed);
+      analogWrite(enginePinNumber, TravelSpeed);    //Changes the pin speed
       analogWrite(reversePinNumber, TravelSpeed);
-      digitalWrite(forwardPinNumber, LOW);
+      digitalWrite(forwardPinNumber, LOW);    //Has the wheel move in reverse by applying voltage to the reverse pin.
       digitalWrite(reversePinNumber, HIGH);
     }
     
     void Stop()
     {
-      analogWrite(enginePinNumber, 0);
+      analogWrite(enginePinNumber, 0);    //Stops all pins
       analogWrite(forwardPinNumber, 0);
       analogWrite(reversePinNumber, 0);
-      digitalWrite(forwardPinNumber, LOW);
+      digitalWrite(forwardPinNumber, LOW);    //Disables both the forward and reverse pins of the wheel.
       digitalWrite(reversePinNumber, LOW);
     }
 };
@@ -277,24 +276,24 @@ class UltraSensor
     int echoPinNumber;
     int triggerPinNumber;
     
-    UltraSensor(int echoPin, int triggerPin)
+    UltraSensor(int echoPin, int triggerPin)    //The initializer method for an ultrasound sensor. This method sets all the pin numbers and modes for each pin.
     {
-      echoPinNumber = echoPin;
+      echoPinNumber = echoPin;    //Stores all the pins as fields to access.
       triggerPinNumber = triggerPin;
       pinMode(echoPin, INPUT);
       pinMode(triggerPin, OUTPUT);
     }
 
-    int Scan(int minDist, int maxDist)
+    int Scan(int minDist, int maxDist)    //A method that will return the distance within the known bounds.
     {
-      digitalWrite(triggerPinNumber,LOW);
+      digitalWrite(triggerPinNumber, LOW);   //Disables the ultrasound emitter to make sure there are no extra waves.
       delayMicroseconds(2);
-      digitalWrite(triggerPinNumber,HIGH);
+      digitalWrite(triggerPinNumber, HIGH);    //Triggers the ultrasound emitter.
       delayMicroseconds(10);
-      digitalWrite(triggerPinNumber,LOW);
+      digitalWrite(triggerPinNumber, LOW);   //Disables the ultrasound emitter.
 
-      long duration = pulseIn(echoPinNumber, HIGH);
-      int distance = duration * 0.034 / 2;
+      long duration = pulseIn(echoPinNumber, HIGH);   //Has the ultrasound sensors receiver wait and interpret the wave signals that return.
+      int distance = duration * 0.034 / 2;    //Converts the time it took for the waves to arrive into a distance.
 
       if (distance < minDist)   //Clamps the distance so we don't get... unwanted values
         distance = minDist;
@@ -304,7 +303,7 @@ class UltraSensor
       return distance;
     }
 
-    int TakeAverageDistance(int amountOfScans, int delayPerScan)
+    int TakeAverageDistance(int amountOfScans, int delayPerScan)    //Takes multiple scans and averages them out for a closer approximation of what the distance really is.
     {
         int avgDist = 0;
         for (int i = 0; i < amountOfScans; i++)
@@ -317,16 +316,15 @@ class UltraSensor
     }
 };
 
-Wheel leftWheel(LeftEngine, LeftWheelForward, LeftWheelReverse);
+Wheel leftWheel(LeftEngine, LeftWheelForward, LeftWheelReverse);    //Defines the wheels as objects which we control separately.
 Wheel rightWheel(RightEngine, RightWheelForward, RightWheelReverse);
-UltraSensor leftSensor(leftEchoPin, leftTriggerPin);
+UltraSensor leftSensor(leftEchoPin, leftTriggerPin);    //Defines both sensors as objects we can control individually.
 UltraSensor rightSensor(rightEchoPin, rightTriggerPin);
 
 void setup()
 {
-  Serial.begin(9600);
-  lcd.begin(16, 2);
-  Serial.begin(9600);
+  Serial.begin(9600);   //Sets up the serial monitor
+  lcd.begin(16, 2);   //Sets up the LCD
   lcd.print("PiMart Robot");
   lcd.setBacklight(1);
   lcd.createChar(0, Heart);
@@ -340,31 +338,31 @@ void setup()
   delay (1000);
 }
 
-//methods for car
-void MoveForward()
+//Methods for cat
+void MoveForward()    //Moves the cat forward
 {
   ForwardFace();
-  leftWheel.GoForward(TravelSpeed);
+  leftWheel.GoForward(TravelSpeed);   //Moves both wheels forward
   rightWheel.GoForward(TravelSpeed);
 }
 
-void MoveReverse()
+void MoveReverse()    //Moves the cat in reverse
 {
   ReverseFace();
-  leftWheel.Reverse(TravelSpeed);
+  leftWheel.Reverse(TravelSpeed);   //Moves both wheels in reverse
   rightWheel.Reverse(TravelSpeed);
 }
 
-void MoveLeft()
+void MoveLeft()   //Moves the cat to the left (in place)
 {
   LeftFace();
   leftWheel.Reverse(TravelSpeed);
-  rightWheel.GoForward(TravelSpeed); //i changed from stop to forward
+  rightWheel.GoForward(TravelSpeed);  //i changed from stop to forward
   /*rightWheel.GoForward(TravelSpeed);
   leftWheel.Stop();*/
 }
 
-void MoveRight()
+void MoveRight()   //Moves the cat to the right (in place)
 {
   RightFace();
   leftWheel.GoForward(TravelSpeed); //i changed from stop to forward
@@ -374,14 +372,14 @@ void MoveRight()
   rightWheel.Stop();*/
 }
 
-void MoveStop()
+void MoveStop()   //Stops all wheels to stop the cat.
 {
   StopFace();
   leftWheel.Stop();
   rightWheel.Stop();
 }
 
-bool NumberInErrorBounds(int num1, int num2)
+bool NumberInErrorBounds(int num1, int num2)    //Compares two numbers to determine if they are within a certain margin of error from each other.
 {
   int err = DistanceMeasurementErrorBounds;
   return num1 >= num2 - err && num1 <= num2 + err;
@@ -390,7 +388,7 @@ bool NumberInErrorBounds(int num1, int num2)
 void loop()
 {
   delay(10);
-  Serial.println(" ");
+  Serial.println(" ");    //These prints are to separate the data in the serial monitor to make the data readable.
   Serial.println(" ");
   Serial.println(" ");
   Serial.println(" ");
@@ -398,7 +396,7 @@ void loop()
   Serial.println(" ");
   Serial.println(" ");
   int leftDistance = leftSensor.Scan(MinDistance, MaxDistance);    //Has the left sensor scan between the minimum and maximum distances.
-  int rightDistance = rightSensor.Scan(MinDistance, MaxDistance);
+  int rightDistance = rightSensor.Scan(MinDistance, MaxDistance);    //Has the right sensor scan between the minimum and maximum distances.
   Serial.print("Left Distance: ");
   Serial.print(leftDistance);
   Serial.println(" cm");
@@ -406,44 +404,44 @@ void loop()
   Serial.print(rightDistance);
   Serial.println(" cm");
 
-  if (leftDistance < ReverseDistance || rightDistance < ReverseDistance)
+  if (leftDistance < ReverseDistance || rightDistance < ReverseDistance)    //Checks if either of the sensors are too close to something. Will reverse if there is.
   {
     MoveReverse();
     Serial.println("Reverse");
     return;
   }
 
-  if (leftDistance < StopDistance || rightDistance < StopDistance)
+  if (leftDistance < StopDistance || rightDistance < StopDistance)    //Checks if either of the sensors are detecting something in the stopping range. Stops the cat if there's something there.
   {
     MoveStop();
     Serial.println("Stop (Stop distance)");
     return;
   }
 
-  if (leftDistance < MaxFollowDistance || rightDistance < MaxFollowDistance)
+  if (leftDistance < MaxFollowDistance || rightDistance < MaxFollowDistance)    //Checks if one of the sensors are detecting something.
   {
-    if (NumberInErrorBounds(leftDistance, rightDistance))   //Checks if both distance measurements are close enough.
+    if (NumberInErrorBounds(leftDistance, rightDistance))   //Checks if both distance measurements are close enough. If they are the cat moves forward.
     {
       Serial.println("Forward");
-      MoveForward();
+      MoveForward();    //Moves the cat forward
     }
-    else    //At this point it can only be either of the two extremes.
+    else    //At this point it can only be either of the two extremes. We already know that the distances are not within their error bounds.
     {
-      if (leftDistance > rightDistance + DistanceMeasurementErrorBounds)
+      if (leftDistance > rightDistance + DistanceMeasurementErrorBounds)    //Checks if there is something in the left side of the cat, in which case it moves toward it.
       {
-        MoveLeft();
-        Serial.println("Right");
+        MoveLeft();   //Moves to the left
+        Serial.println("Left");
       }
       else
       {
-        MoveRight();
-        Serial.println("Left");
+        MoveRight();    //Moves to the right
+        Serial.println("Right");
       }
     }
   }
   else
   {
-    MoveStop();
+    MoveStop();   //Stops the cat if both sensors are out of bounds.
     Serial.println("Stop");
   }
 }
